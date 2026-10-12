@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum ResourceStatus {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+enum ReservationStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id           String        @id @default(uuid()) @db.Uuid
+  name         String
+  email        String        @unique
+  passwordHash String
+  role         UserRole      @default(USER)
+  reservations Reservation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String     @id @default(uuid()) @db.Uuid
+  name      String     @unique
+  resources Resource[]
+
+  createdAt DateTime @default(now())
+}
+
+model Resource {
+  id          String         @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  location    String?
+  status      ResourceStatus @default(AVAILABLE)
+
+  categoryId String   @db.Uuid
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  reservations Reservation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+}
+
+model Reservation {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+
+  resourceId String   @db.Uuid
+  resource   Resource @relation(fields: [resourceId], references: [id])
+
+  startTime DateTime
+  endTime   DateTime
+
+  status ReservationStatus @default(CONFIRMED)
+
+  purpose String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([resourceId, startTime, endTime])
+  @@index([userId])
+}
