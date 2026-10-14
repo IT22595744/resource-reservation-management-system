@@ -3,12 +3,15 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import AuthLayout from "@/components/auth/AuthLayout";
 
 export default function LoginPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -27,11 +30,11 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        setError("Invalid email or password.");
         return;
       }
 
-      router.push("/");
+      router.replace("/dashboard");
       router.refresh();
     } catch {
       setError("Unable to sign in. Please try again.");
@@ -41,56 +44,88 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md space-y-5 rounded-2xl bg-white p-8 shadow"
-      >
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">
-            ReserveHub
-          </h1>
-          <p className="mt-2 text-slate-600">
-            Sign in to manage your reservations.
-          </p>
-        </div>
-
+    <AuthLayout mode="login">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <p role="alert" className="text-sm text-red-600">
+          <div
+            role="alert"
+            className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+          >
             {error}
-          </p>
+          </div>
         )}
 
-        <label className="block text-sm font-medium text-slate-700">
-          Email
+        <div>
+          <label
+            htmlFor="email"
+            className="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Email Address
+          </label>
+
           <input
+            id="email"
             type="email"
+            autoComplete="email"
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="mt-2 w-full rounded-lg border p-3"
+            placeholder="you@example.com"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
           />
-        </label>
+        </div>
 
-        <label className="block text-sm font-medium text-slate-700">
-          Password
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            className="mt-2 w-full rounded-lg border p-3"
-          />
-        </label>
+        <div>
+          <label
+            htmlFor="password"
+            className="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Password
+          </label>
+
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Enter your password"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 pr-20 text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-blue-600 hover:text-blue-800"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+        </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-blue-600 p-3 font-semibold text-white disabled:opacity-60"
+          className="mt-3 w-full rounded-xl bg-[#84CC16] px-5 py-4 font-bold text-slate-950 shadow-lg shadow-lime-200 transition hover:-translate-y-0.5 hover:bg-[#A3E635] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {loading ? "Signing in..." : "Sign in"}
+          {loading ? "Signing in..." : "Sign In →"}
         </button>
+
+        <div className="border-t border-slate-100 pt-5 text-center">
+          <p className="text-sm text-slate-600">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              className="font-bold text-blue-600 hover:underline"
+            >
+              Register here
+            </Link>
+          </p>
+        </div>
       </form>
-    </main>
+    </AuthLayout>
   );
 }

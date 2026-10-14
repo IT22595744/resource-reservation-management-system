@@ -6,6 +6,7 @@ import {
   getAllResources,
   createResource,
 } from "@/services/resource.service";
+import { isValidResourceImage } from "@/lib/validate-resource-image";
 
 export async function GET() {
   const session = await auth();
@@ -66,6 +67,13 @@ export async function POST(request: Request) {
           message: "Invalid resource data",
           errors: parsed.error.flatten().fieldErrors,
         },
+        { status: 400 }
+      );
+    }
+
+    if (!(await isValidResourceImage(parsed.data))) {
+      return NextResponse.json(
+        { message: "Invalid or unverified resource image" },
         { status: 400 }
       );
     }

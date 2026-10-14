@@ -11,6 +11,8 @@ import {
   deactivateResource,
 } from "@/services/resource.service";
 
+import { isValidResourceImage } from "@/lib/validate-resource-image";
+
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
@@ -90,52 +92,62 @@ export async function PATCH(
     return jsonError("Invalid resource ID", 400);
   }
 
-  try {
-    const body = await request.json();
-    const parsed = updateResourceSchema.safeParse(body);
+try {
+  const body = await request.json();
+  const parsed = updateResourceSchema.safeParse(body);
 
-    if (!parsed.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid resource data",
-          errors: parsed.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      );
-    }
-
-    if (Object.keys(parsed.data).length === 0) {
-      return jsonError("No update fields provided", 400);
-    }
-
-    const existingResource = await getResourceById(id);
-
-    if (!existingResource) {
-      return jsonError("Resource not found", 404);
-    }
-
-    if (parsed.data.categoryId) {
-      const category = await prisma.category.findUnique({
-        where: { id: parsed.data.categoryId },
-      });
-
-      if (!category) {
-        return jsonError("Category not found", 404);
-      }
-    }
-
-    const resource = await updateResource(id, parsed.data);
-
-    return NextResponse.json({
-      success: true,
-      message: "Resource updated successfully",
-      data: resource,
-    });
-  } catch (error) {
-    console.error("Failed to update resource:", error);
-    return jsonError("Unable to update resource", 500);
+  // Step 1: Validate resource data
+  if (!parsed.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Invalid resource data",
+        errors: parsed.error.flatten().fieldErrors,
+      },
+      { status: 400 }
+    );
   }
+
+  // Step 2: Validate Cloudinary image
+  if (!(await isValidResourceImage(parsed.data))) {
+    return jsonError("Invalid or unverified resource image", 400);
+  }
+
+  // Step 3: Check whether update fields were provided
+  if (Object.keys(parsed.data).length === 0) {
+    return jsonError("No update fields provided", 400);
+  }
+
+  // Step 4: Check whether resource exists
+  const existingResource = await getResourceById(id);
+
+  if (!existingResource) {
+    return jsonError("Resource not found", 404);
+  }
+
+  // Step 5: Validate category if changed
+  if (parsed.data.categoryId) {
+    const category = await prisma.category.findUnique({
+      where: { id: parsed.data.categoryId },
+    });
+
+    if (!category) {
+      return jsonError("Category not found", 404);
+    }
+  }
+
+  // Step 6: Update resource
+  const resource = await updateResource(id, parsed.data);
+
+  return NextResponse.json({
+    success: true,
+    message: "Resource updated successfully",
+    data: resource,
+  });
+} catch (error) {
+  console.error("Failed to update resource:", error);
+  return jsonError("Unable to update resource", 500);
+}
 }
 
 // DELETE /api/resources/:id

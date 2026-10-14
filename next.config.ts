@@ -1,9 +1,21 @@
 import type { NextConfig } from "next";
+import { fa } from "zod/locales";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  cacheComponents: false,
+  partialPrefetching: false,
+  
+  images: {
+      remotePatterns: [
+        {
+          protocol: "https",
+          hostname: "res.cloudinary.com",
+          pathname: "/**",
+        },
+      ],
+    },
+
   turbopack: {
     rules: {
       "*.css": {

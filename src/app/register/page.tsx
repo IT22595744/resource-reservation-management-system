@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import AuthLayout from "@/components/auth/AuthLayout";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
 
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -24,12 +26,12 @@ export default function RegisterPage() {
     setError("");
 
     if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match");
+      setError("Passwords do not match.");
       return;
     }
 
     if (form.password.length < 8) {
-      setError("Password must contain at least 8 characters");
+      setError("Password must contain at least 8 characters.");
       return;
     }
 
@@ -51,82 +53,123 @@ export default function RegisterPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        setError(result.message ?? "Registration failed");
+        setError(result.message ?? "Registration failed.");
         return;
       }
 
       router.push("/login?registered=true");
     } catch {
-      setError("Unable to connect to the server");
+      setError("Unable to connect to the server.");
     } finally {
       setLoading(false);
     }
   }
 
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md space-y-5 rounded-2xl bg-white p-8 shadow"
-      >
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">
-            Create your account
-          </h1>
-          <p className="mt-2 text-slate-600">
-            Join ReserveHub to reserve shared resources.
-          </p>
-        </div>
+  const inputClass =
+    "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100";
 
+  return (
+    <AuthLayout mode="register">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <p role="alert" className="text-sm text-red-600">
+          <div
+            role="alert"
+            className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+          >
             {error}
-          </p>
+          </div>
         )}
 
-        <label className="block text-sm font-medium text-slate-700">
-          Full name
+        <div>
+          <label
+            htmlFor="name"
+            className="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Full Name
+          </label>
+
           <input
+            id="name"
+            type="text"
+            autoComplete="name"
             required
             value={form.name}
             onChange={(event) =>
               setForm({ ...form, name: event.target.value })
             }
-            className="mt-2 w-full rounded-lg border p-3"
+            placeholder="Enter your full name"
+            className={inputClass}
           />
-        </label>
+        </div>
 
-        <label className="block text-sm font-medium text-slate-700">
-          Email
+        <div>
+          <label
+            htmlFor="register-email"
+            className="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Email Address
+          </label>
+
           <input
+            id="register-email"
             type="email"
+            autoComplete="email"
             required
             value={form.email}
             onChange={(event) =>
               setForm({ ...form, email: event.target.value })
             }
-            className="mt-2 w-full rounded-lg border p-3"
+            placeholder="you@example.com"
+            className={inputClass}
           />
-        </label>
+        </div>
 
-        <label className="block text-sm font-medium text-slate-700">
-          Password
-          <input
-            type="password"
-            minLength={8}
-            required
-            value={form.password}
-            onChange={(event) =>
-              setForm({ ...form, password: event.target.value })
-            }
-            className="mt-2 w-full rounded-lg border p-3"
-          />
-        </label>
+        <div>
+          <label
+            htmlFor="register-password"
+            className="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Password
+          </label>
 
-        <label className="block text-sm font-medium text-slate-700">
-          Confirm password
+          <div className="relative">
+            <input
+              id="register-password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              minLength={8}
+              required
+              value={form.password}
+              onChange={(event) =>
+                setForm({ ...form, password: event.target.value })
+              }
+              placeholder="At least 8 characters"
+              className={`${inputClass} pr-20`}
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-blue-600 hover:text-blue-800"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label
+            htmlFor="confirm-password"
+            className="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Confirm Password
+          </label>
+
           <input
-            type="password"
+            id="confirm-password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
             minLength={8}
             required
             value={form.confirmPassword}
@@ -136,25 +179,31 @@ export default function RegisterPage() {
                 confirmPassword: event.target.value,
               })
             }
-            className="mt-2 w-full rounded-lg border p-3"
+            placeholder="Re-enter your password"
+            className={inputClass}
           />
-        </label>
+        </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-blue-600 p-3 font-semibold text-white disabled:opacity-60"
+          className="mt-3 w-full rounded-xl bg-[#84CC16] px-5 py-4 font-bold text-slate-950 shadow-lg shadow-lime-200 transition hover:-translate-y-0.5 hover:bg-[#A3E635] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {loading ? "Creating account..." : "Register"}
+          {loading ? "Creating account..." : "Create Account →"}
         </button>
 
-        <p className="text-center text-sm text-slate-600">
-          Already registered?{" "}
-          <Link href="/login" className="text-blue-600 underline">
-            Sign in
-          </Link>
-        </p>
+        <div className="border-t border-slate-100 pt-5 text-center">
+          <p className="text-sm text-slate-600">
+            Already registered?{" "}
+            <Link
+              href="/login"
+              className="font-bold text-blue-600 hover:underline"
+            >
+              Sign in
+            </Link>
+          </p>
+        </div>
       </form>
-    </main>
+    </AuthLayout>
   );
 }

@@ -1,7 +1,10 @@
 import "server-only";
+
 import { prisma } from "@/lib/prisma";
+
 import type {
   CreateResourceInput,
+  UpdateResourceInput,
 } from "@/lib/validations/resource";
 
 export async function getAllResources() {
@@ -24,9 +27,7 @@ export async function getResourceById(id: string) {
   });
 }
 
-export async function createResource(
-  data: CreateResourceInput
-) {
+export async function createResource(data: CreateResourceInput) {
   return prisma.resource.create({
     data: {
       name: data.name,
@@ -34,6 +35,8 @@ export async function createResource(
       location: data.location,
       categoryId: data.categoryId,
       status: data.status,
+      imageUrl: data.imageUrl,
+      imagePublicId: data.imagePublicId,
     },
     include: {
       category: true,
@@ -43,7 +46,7 @@ export async function createResource(
 
 export async function updateResource(
   id: string,
-  data: Partial<CreateResourceInput>
+  data: UpdateResourceInput
 ) {
   return prisma.resource.update({
     where: { id },

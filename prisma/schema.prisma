@@ -54,6 +54,10 @@ model Resource {
   location    String?
   status      ResourceStatus @default(AVAILABLE)
 
+  // Resource image (Cloudinary)
+  imageUrl      String?
+  imagePublicId String?
+
   categoryId String   @db.Uuid
   category   Category @relation(fields: [categoryId], references: [id])
 
