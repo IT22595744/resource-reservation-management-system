@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: false,
   partialPrefetching: false,
+
+  // Hide Next.js development indicator
+  devIndicators: false,
   
   images: {
       remotePatterns: [
