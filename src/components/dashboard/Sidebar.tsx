@@ -14,6 +14,7 @@ import {
   Settings2,
   X,
   Layers3,
+  FolderKanban,
 } from "lucide-react";
 
 type SidebarProps = {
@@ -42,18 +43,23 @@ export default function Sidebar({ isAdmin }: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const links = [
-    ...navigation,
-    ...(isAdmin
-      ? [
-          {
-            name: "Manage Resources",
-            href: "/dashboard/admin/resources",
-            icon: Settings2,
-          },
-        ]
-      : []),
-  ];
+    const links = [
+      ...navigation,
+      ...(isAdmin
+        ? [
+            {
+              name: "Manage Resources",
+              href: "/dashboard/admin/resources",
+              icon: Settings2,
+            },
+            {
+              name: "Manage Categories",
+              href: "/dashboard/admin/categories",
+              icon: FolderKanban,
+            },
+          ]
+        : []),
+    ];
 
   return (
     <>

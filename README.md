@@ -52,6 +52,17 @@ Administrators can maintain the resource catalog and control resource availabili
 - Rebook time slots released through cancellation.
 - Prevent users from modifying reservations belonging to other users.
 
+### Admin Category Management
+
+ReserveHub provides a complete category management module accessible exclusively to administrators.
+
+- Create: Add new resource categories through the dashboard.
+- Read: View and search categories, including their assigned resource counts.
+- Update: Rename existing categories without affecting associated resources.
+- Delete: Remove categories that have no associated resources.
+- Data integrity: Prevent deletion of categories containing resources.
+- Security: Protect category modification endpoints with administrator role-based authorization.
+
 ### Dashboard
 
 - Personalized welcome section.
@@ -408,8 +419,19 @@ The codebase separates user interface components, API handlers, business logic, 
 
 The following assessment materials will be provided with the final submission:
 
-- **Demonstration Video:** [Add shareable video link]
-- **Entity Relationship Diagram:** [Add shareable ER diagram link]
+## Demonstration Video
+
+Watch the ReserveHub demonstration video:
+
+DEMO_VIDEO_GOOGLE_DRIVE_LINK = https://drive.google.com/file/d/1IAZ5Q_SlywvP2D1IZkRNulwyTov5gSeE/view?usp=sharing
+
+## Database ER Diagram
+
+View the database entity relationship diagram:
+
+ER_DIAGRAM_GOOGLE_DRIVE_LINK = https://drive.google.com/file/d/1Y3czMBJBhPNO1z5MP9b24mDfrxke__9x/view?usp=drive_link
+
+ER_DIAGRAM_URL = https://dbdiagram.io/d/ReserveHub-—-Resource-Reservation-Management-System-6acf6880064322c86949ebb6
 
 The demonstration covers the business problem, application features, reservation conflict prevention, and important engineering decisions.
 
