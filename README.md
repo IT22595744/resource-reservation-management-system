@@ -4,6 +4,10 @@ A full-stack resource reservation management application developed as part of th
 
 ReserveHub provides a centralized platform for managing shared organizational resources, checking availability, and coordinating reservations. It replaces informal booking processes with a structured system designed to reduce scheduling conflicts and improve resource utilization.
 
+##  hosted URL 
+i have hosted the application ,URL is below 
+Vercel_Domain_URL = https://resource-reservation-management-sys-ashy.vercel.app/
+
 ## 1. Project Overview
 
 Organizations frequently share resources such as meeting rooms, equipment, and facilities. Managing reservations through informal communication or manual records can lead to overlapping bookings, scheduling confusion, and uncertainty about availability.
